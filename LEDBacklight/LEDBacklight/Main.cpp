@@ -8,8 +8,8 @@ void setLEDS();
 
 
 //DEFINES FOR MONITOR DIMENSIONS
-#define MONITOR_WIDTHpx 1920
-#define MONITOR_HEIGHTpx 1080
+#define MONITOR_WIDTHpx 2560
+#define MONITOR_HEIGHTpx 1440
 //End Monitor Dimesions
 
 
@@ -73,47 +73,11 @@ int main()
 	//End Temp Area
 	setLEDS();
 
-	try
-	{
-		int n = 0;
-		while (n < -1)
-		{
-			WriteComPort("COM6", "" + n);
-			n++;
-		}
-
-		if (WriteComPort("COM6", "212"))//outputs on arduino both values 50....53
-			cout << "good";
-
-
-
-
-	}
-	catch (exception e)
-	{
-		cout << "Com Port not connected, Is it plugged in?\n";
-	}
 	system("pause");
 }
 
-
-/*
-	determine how many pixels are going to be on the top, left, right (should be done by gui but not sure how)
-
-	math the size of each LED
-
-	Select the "quality" of each LED
-	   ^
-	   |
-	do X samples per pixel
-*/
-
-//2560 x 1440 monitor resolution
-
-
-
-//Assumed there is a LED in both top right and top left corners
-/*This function gets all the samples of the pixels and outputs the values to the screen
+/*Assumed there is a LED in both top right and top left corners
+This function gets all the samples of the pixels and outputs the values to the screen
 future use of this function will be to calculate the pixel value and immediatly send through the COM port*/
 void setLEDS()
 {
@@ -160,7 +124,6 @@ void setLEDS()
 		}
 		//End getting samples
 
-		//color = GetPixel(hdc, 15+n*topOffset, 20);
 		r = rT / Quality;
 		g = gT / Quality;
 		b = bT / Quality;
