@@ -8,8 +8,8 @@ void setLEDS();
 
 
 //DEFINES FOR MONITOR DIMENSIONS
-#define MONITOR_WIDTHpx 1920
-#define MONITOR_HEIGHTpx 1080
+#define MONITOR_WIDTHpx 2560
+#define MONITOR_HEIGHTpx 1440
 //End Monitor Dimesions
 
 
@@ -71,49 +71,14 @@ int main()
 
 
 	//End Temp Area
+	//Sleep(1000);
 	setLEDS();
 
-	try
-	{
-		int n = 0;
-		while (n < -1)
-		{
-			WriteComPort("COM6", "" + n);
-			n++;
-		}
-
-		if (WriteComPort("COM6", "212"))//outputs on arduino both values 50....53
-			cout << "good";
-
-
-
-
-	}
-	catch (exception e)
-	{
-		cout << "Com Port not connected, Is it plugged in?\n";
-	}
 	system("pause");
 }
 
-
-/*
-	determine how many pixels are going to be on the top, left, right (should be done by gui but not sure how)
-
-	math the size of each LED
-
-	Select the "quality" of each LED
-	   ^
-	   |
-	do X samples per pixel
-*/
-
-//2560 x 1440 monitor resolution
-
-
-
-//Assumed there is a LED in both top right and top left corners
-/*This function gets all the samples of the pixels and outputs the values to the screen
+/*Assumed there is a LED in both top right and top left corners
+This function gets all the samples of the pixels and outputs the values to the screen
 future use of this function will be to calculate the pixel value and immediatly send through the COM port*/
 void setLEDS()
 {
@@ -122,6 +87,12 @@ void setLEDS()
 	int topOffset = MONITOR_WIDTHpx / topLED; //Hardcode for Personal monitor Lookup universal solution
 	int leftOffset = MONITOR_HEIGHTpx / leftLED; //Hardcode for Personal monitor Lookup universal solution
 	int rightOffset = MONITOR_HEIGHTpx / rightLED; //Hardcode for Personal monitor Lookup universal solution
+
+	cout << "topOffset: " << topOffset << endl;
+
+	cout << "leftOffset: " << leftOffset << endl;
+
+	cout << "rightOffset: " << rightOffset << endl;
 
 
 	//Colors
@@ -160,7 +131,6 @@ void setLEDS()
 		}
 		//End getting samples
 
-		//color = GetPixel(hdc, 15+n*topOffset, 20);
 		r = rT / Quality;
 		g = gT / Quality;
 		b = bT / Quality;
@@ -179,12 +149,12 @@ void setLEDS()
 		{
 			for (int r = 0; r < 2; r++)//used for top and bottom row of the samples
 			{
-				if (r == 0)color = GetPixel(hdc, (.15*leftOffset), ((c * 100) / (Quality / 2)) + n * leftOffset);//Might not use leftOffset becuase thats the width of pixel
-				if (r == 1)color = GetPixel(hdc, (.75*leftOffset), ((c * 100) / (Quality / 2)) + n * leftOffset);
+				if (r == 0)color = GetPixel(hdc, (.15*leftOffset), ((leftOffset * (c*1.0 / (Quality / 2))) + n * leftOffset));//Might not use leftOffset becuase thats the width of pixel
+				if (r == 1)color = GetPixel(hdc, (.75*leftOffset), ((leftOffset * (c*1.0 / (Quality / 2))) + n * leftOffset));
 
 				//Error checking
-				if (r == 0)cout << "LEFTLED: Getting the pixel at the coords: " << (.15*leftOffset) << " " << (((c * 100) / (Quality / 2)) + n * leftOffset) << endl;
-				else cout << "LEFTLED: Getting the pixel at the coords: " << (.75*leftOffset) << " " << (((c * 100) / (Quality / 2)) + n * leftOffset) << endl;
+				if (r == 0)cout << "LEFTLED: Getting the pixel at the coords: " << (.15*leftOffset) << " " << ((leftOffset * (c*1.0 / (Quality / 2))) + n * leftOffset) << endl;
+				else cout << "LEFTLED: Getting the pixel at the coords: " << (.75*leftOffset) << " " << ((leftOffset * (c*1.0 / (Quality / 2))) + n * leftOffset) << endl;
 				//End error checking
 
 				rT += GetRValue(color);
@@ -207,6 +177,36 @@ void setLEDS()
 
 	for (int n = 0; n < rightLED; n++)//setting Right LEDS
 	{
+		//Getting X amount of samples per pixel;
+		for (int c = 0; c < Quality / 2; c++) //used for the columns
+		{
 
+			//n*rightOffset sets the offset to the new pixel
+			for (int r = 0; r < 2; r++)//used for top and bottom row of the samples
+			{	//							Getting left right sample	//Setting samples to certain pixel						//LED OFFSET
+				if (r == 0)color = GetPixel(hdc, (.15*rightOffset + MONITOR_WIDTHpx * .9), ((rightOffset * (c*1.0 / (Quality / 2))) + n * rightOffset));//Might not use leftOffset becuase thats the width of pixel
+				if (r == 1)color = GetPixel(hdc, (.75*rightOffset + MONITOR_WIDTHpx * .9), ((rightOffset * (c*1.0 / (Quality / 2))) + n * rightOffset));
+
+				//Error checking
+				if (r == 0)cout << "RIGHTLED: Getting the pixel at the coords: " << (.15*rightOffset + MONITOR_WIDTHpx * .85) << " " << ((rightOffset * (c*1.0 / (Quality / 2))) + n * rightOffset) << endl;
+				else cout << "RIGHTLED: Getting the pixel at the coords: " << (.75*rightOffset + MONITOR_WIDTHpx * .85) << " " << ((rightOffset * (c*1.0 / (Quality / 2))) + n * rightOffset) << endl;
+				//End error checking
+
+				rT += GetRValue(color);
+				gT += GetGValue(color);
+				bT += GetBValue(color);
+			}
+		}
+		//End getting samples
+
+		r = rT / Quality;
+		g = gT / Quality;
+		b = bT / Quality;
+
+		cout << "Pixel Color: " << r << " " << g << " " << b << endl;
+
+		rT = 0;
+		gT = 0;
+		bT = 0;
 	}
 }
